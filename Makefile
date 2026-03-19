@@ -5,7 +5,7 @@ bootloader := BIOS_x86_64_Bootloader
 bootloader:
 	nasm -f bin "${bootloader}"/bootloader.asm -o "${bootloader}"/bootloader
 	nasm -f elf64 "${bootloader}"/early_boot.asm -o "${bootloader}"/early_boot.o
-	gcc -ffreestanding -O3 -c -o "${bootloader}"/main.o "${bootloader}"/main.c
+	g++ -ffreestanding -O0 -c -o "${bootloader}"/main.o "${bootloader}"/main.cpp
 	ld -T "${bootloader}"/linker.ld "${bootloader}"/early_boot.o "${bootloader}"/main.o 
 
 bootdisk: bootloader

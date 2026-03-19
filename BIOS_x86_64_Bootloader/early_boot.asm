@@ -214,8 +214,8 @@ extern C_main
 
 init64:
     cli                             ; no interruptions
-    ;; load 1 << 1 into all data segment registers
-    mov ax, 1 << 1
+    ;; load 0x10 into all data segment registers
+    mov ax, 0x10
     mov ss, ax
     mov ds, ax
     mov es, ax
@@ -225,12 +225,13 @@ init64:
     mov rdi, 0xB8000
     mov ah, 0x07
     mov rcx, 0
+    lea rsi, [ rel msg1 ]
 .print:
-    mov al, [msg1 + rcx]
+    mov al, [rsi + rcx]
     mov [rdi], ax 
     add rdi, 2
     inc rcx
-    mov bl, [msg1 + rcx]
+    mov bl, [rsi + rcx]
     cmp bl, 0
     jne .print
     ;; set cursor position to where we stopped. 
@@ -250,10 +251,9 @@ init64:
     out dx, al
     ;; finally, load and launch the C main the scan disks and mount the ext2 partition 
     mov rsp, 0xF000                 ; set the top of the stack
-    lea rax, C_main
+    lea rax, [ rel C_main ]
     call rax                        ; now, we officially handed control of everything to the C main.
 
-
-
-msg1 db "succesfully entered long mode, and initialized bootloader...", 0
+section .rodata
+    msg1 db "succesfully entered long mode, and initialized bootloader...", 0
 
