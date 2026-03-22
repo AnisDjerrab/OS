@@ -2,12 +2,16 @@
 // the function C_main is directly called by the Assembly code and launched in long mode
 
 #include "Peripherals/PCI.h"
+#include "internal_API/standart_functions_def.hpp"
 
 #define MAX_PCI_DEVICES 512                     // the max of PCI devices supported by this bootloader
-pci_device* PCI_DEVICES = (pci_device*)0x100000;// we'll write all the PCI devices metadata right in this array -- hard coded adress right after the VGA memory
-uint32_t* PCI_FOUND_DEVICES = (uint32_t*)(0x100000 + sizeof(pci_device)* MAX_PCI_DEVICES);     // and we'll store the device IDs in this array right here. as always, hard coded adress -- no malloc or smart memory management yet!
+pci_device* PCI_DEVICES = (pci_device*)0x104000;// we'll write all the PCI devices metadata right in this array -- hard coded adress right after the VGA memory
+uint32_t* PCI_FOUND_DEVICES = (uint32_t*)(0x104000 + sizeof(pci_device)* MAX_PCI_DEVICES);     // and we'll store the device IDs in this array right here. as always, hard coded adress -- no malloc or smart memory management yet!
 
 extern "C" void C_main() {
+    int line = 2;
+    printf("h", line);
+    asm volatile("hlt");
     // now, we first need to scan all the peripherals to find the different disks connected via USB, SATA or IDE
     // we don't need to parse the AML tables just yet -- the operating system will do it later on
     // first : enumerate the PCI devices
