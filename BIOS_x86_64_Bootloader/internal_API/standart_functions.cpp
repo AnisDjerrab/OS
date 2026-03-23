@@ -1,6 +1,7 @@
 // this file contains the standard functions provided to the bootloader
 #include <stdint.h>
 #include <uchar.h>
+#include "standart_functions_def.h"
 
 volatile char* VGA_MEMORY = (char*)0xB8000;
 volatile char* VGA_TMP_BUFFER = (char*)0x3000;
@@ -8,32 +9,30 @@ volatile char* VGA_TMP_BUFFER = (char*)0x3000;
 void memcpy(int* dest, int* src, uint64_t size) {
     // since the 1st arg, dest, is contained in %rdi, we do not need to move it
     // since the 2nd arg, src, is contained in %rsi, we do not need to move it
-    asm volatile("movq %%rdx, %%rcx \n\t"
-                 "cld               \n\t"
-                 "rep movsb         \n\t"
-                 : // no output
-                 : "D"(dest), "S"(src), "c"(size)
-                 : "rdx", "memory");
+    asm volatile("cld                 \n\t"
+                 "rep movsb           \n\t"
+                 :  "+D" (dest),
+                    "+c" (size),
+                    "+S" (src)
+                 :  // everything is modified
+                 : "memory", "cc");
 }
 
-void memset(int* ptr, char8_t value, uint64_t size) {
-    asm volatile("movb %%sil, %%al  \n\t"
-                 "movq %%rdx, %%rcx \n\t"
-                 "cld               \n\t"
+void memset(int* ptr, char8_t value, uint64_t n) {
+    asm volatile("cld               \n\t"
                  "rep stosb         \n\t"
-                 : // no output
-                 : "D"(ptr), "a"(value), "c"(size)
-                 : "rdx", "memory");
+                 : "+c"(n), "+D"(ptr)
+                 : "a"((unsigned char)value)
+                 : "cc", "memory");
 }
 
-void memset(int* ptr, char16_t value, uint64_t size) {
-    asm volatile("movw %%si, %%ax   \n\t"
-                 "movq %%rdx, %%rcx \n\t"
-                 "cld               \n\t"
+
+void memset(int* ptr, char16_t value, uint64_t n) {
+    asm volatile("cld               \n\t"
                  "rep stosw         \n\t"
-                 : // no output
-                 : "D"(ptr), "a"(value), "c"(size)
-                 : "rdx", "memory");
+                 : "+c"(n), "+D"(ptr)
+                 : "a"(value)
+                 : "cc", "memory");
 }
 
 int strlen(const char* str) {
@@ -46,26 +45,29 @@ int strlen(const char* str) {
     }
 }
 
-
 int printf(const char* str, int line) {
-    int numberOfLines = strlen(str) / 80 + 1;
+    int lenMessage = strlen(str);
+    int numberOfLines = ( lenMessage + 79 ) / 80;
     char16_t placeholder = 0x0007;
-    if (80 - line >= numberOfLines) {
-        memset((int*)(VGA_MEMORY + line*80), placeholder, numberOfLines*80);
-        for (int i = 0; i < strlen(str); i+=2) {
-            VGA_MEMORY[i + line*80] = str[i/2];
-            VGA_MEMORY[i + 1 + line*80] = 0x07;
+    if (25 - line >= numberOfLines) {
+        memset((int*)(VGA_MEMORY + line*160), placeholder, numberOfLines*80);
+        for (int i = 0; i < lenMessage*2; i+=2) {
+            VGA_MEMORY[i + line*160] = str[i/2];
+            VGA_MEMORY[i + 1 + line*160] = 0x07;
         }
         line += numberOfLines;
-        return numberOfLines;
     } else {
-        int neededLines = (80 - line - numberOfLines) * -1;
-        memcpy((int*)(VGA_MEMORY + neededLines * 80), (int*)(VGA_TMP_BUFFER), (25 - neededLines) * 80);
-        memset((int*)(VGA_MEMORY), placeholder, 80*25);
-        memcpy((int*)(VGA_TMP_BUFFER), (int*)(VGA_MEMORY), (25 - neededLines) * 80);
-        memcpy((int*)(VGA_MEMORY + (25 - neededLines)*80), (int*)(str), strlen(str));
+        int neededLines = (25 - line - numberOfLines) * -1;
+        memcpy((int*)(VGA_TMP_BUFFER), (int*)(VGA_MEMORY + neededLines * 160), (25 - neededLines) * 160);
+        memcpy((int*)(VGA_MEMORY), (int*)(VGA_TMP_BUFFER), (25 - neededLines) * 160);
+        memset((int*)(VGA_MEMORY + (25 - neededLines) * 160), placeholder, neededLines*80);
+        for (int i = 0; i < lenMessage*2; i+=2) {
+            VGA_MEMORY[(25 - neededLines)*160 + i] = str[i/2];
+            VGA_MEMORY[(25 - neededLines)*160 + i + 1] = 0x07;
+        }
         line = 25;
-        return line;
     }
-
+    uint32_t index = (line - 1) * 80 + lenMessage;
+    setCursorPos(index);
+    return line;
 }

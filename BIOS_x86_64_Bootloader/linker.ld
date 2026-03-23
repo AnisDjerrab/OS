@@ -1,5 +1,5 @@
 OUTPUT_FORMAT(binary)
-OUTPUT(BIOS_x86_64_Bootloader/early_boot)
+OUTPUT(BIOS_x86_64_Bootloader/early_boot.bin)
 
 ENTRY(_start)
 

@@ -239,24 +239,32 @@ init64:
     cmp bl, 0
     jne .print
     ;; set cursor position to where we stopped.
-    push rcx                        ; the cursor position is now right on top of the stack -> useful for later on
-    mov ebx, ecx
-    mov dx, 0x3D4
-    mov al, 0x0F
-    out dx, al
-    mov dx, 0x3D5
-    mov al, bl
-    out dx, al
+    mov rdi, rcx
+    call setCursorPos
+    ;; finally, load and launch the C main the scan disks and mount the ext2 partition
+    mov rsp, 0x200000            ; set the top of the stack to the very end of the mapped RAM area
+    lea rax, [ rel C_main ]
+    call rax                     ; now, we officially handed control of everything to the C main.
+
+
+global setCursorPos
+setCursorPos:
+    ;; the cursor position is contained in edi
+    mov ebx, edi
     mov dx, 0x3D4
     mov al, 0x0E
     out dx, al
     mov dx, 0x3D5
     mov al, bh
     out dx, al
-    ;; finally, load and launch the C main the scan disks and mount the ext2 partition
-    mov rsp, 0x200000            ; set the top of the stack to the very end of the mapped RAM area
-    lea rax, [ rel C_main ]
-    call rax                     ; now, we officially handed control of everything to the C main.
+    mov dx, 0x3D4
+    mov al, 0x0F
+    out dx, al
+    mov dx, 0x3D5
+    mov al, bl
+    out dx, al
+    ret
+
 
 section .rodata
     msg1 db "succesfully entered long mode, and initialized bootloader...", 0

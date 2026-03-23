@@ -5,8 +5,8 @@ bootloader := BIOS_x86_64_Bootloader
 bootloader:
 	nasm -f bin "${bootloader}"/bootloader.asm -o "${bootloader}"/bootloader.bin
 	nasm -f elf64 "${bootloader}"/early_boot.asm -o "${bootloader}"/early_boot.o
-	g++ -ffreestanding -O0 -c -o "${bootloader}"/internal_API/standart_functions.o "${bootloader}"/internal_API/standart_functions.cpp
-	g++ -ffreestanding -O0 -c -o "${bootloader}"/main.o "${bootloader}"/main.cpp
+	g++ -ffreestanding -O2 -c -o "${bootloader}"/internal_API/standart_functions.o "${bootloader}"/internal_API/standart_functions.cpp
+	g++ -ffreestanding -O2 -c -o "${bootloader}"/main.o "${bootloader}"/main.cpp
 	ld -r "${bootloader}"/main.o "${bootloader}"/internal_API/standart_functions.o -o "${bootloader}"/c_combined.o
 	ld -T "${bootloader}"/linker.ld "${bootloader}"/early_boot.o "${bootloader}"/c_combined.o --oformat binary -o "${bootloader}"/early_boot.bin
 
