@@ -10,15 +10,15 @@ uint32_t* PCI_FOUND_DEVICES = (uint32_t*)(0x104000 + sizeof(pci_device)* MAX_PCI
 
 extern "C" void C_main() {
     setCursorPos(0);
-    int line = 1;
-    line = printf("test of the printf function...", line);
     char converted_number[9];
-    line = printf(itoa(255, converted_number, 16), line);
-    asm volatile("hlt");
+    int line = 1;
+    line = printf("succesfully entered the bootloader C kernel...", line);
     // now, we first need to scan all the peripherals to find the different disks connected via USB, SATA or IDE
     // we don't need to parse the AML tables just yet -- we can scan the PCI devices directly
     // first : enumerate the PCI devices
     auto number_of_found_pci_devices = scan_pci_devices(PCI_FOUND_DEVICES, MAX_PCI_DEVICES);   // now, the number of found pci devices is contained in this variable. we'll use it later on.
+    line = printf(itoa(number_of_found_pci_devices, converted_number, 10), line);
+    asm("hlt");
     if (number_of_found_pci_devices > 0) {
         asm volatile("hlt");
     }
