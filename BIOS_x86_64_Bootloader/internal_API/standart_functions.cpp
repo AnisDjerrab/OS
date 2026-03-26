@@ -116,3 +116,14 @@ char* itoa(int number, char* str, int base) {
     str[index] = 0;
     return str;
 }
+
+char* merge(char* output_str, int number_of_elements, char* input_strings[]) {
+    int index = 0;
+    for (int i = 0; i < number_of_elements; i++) {
+        int length = strlen(input_strings[i]);
+        memcpy((int*)(output_str + index), (int*)input_strings[i], length);
+        index += length;
+    }
+    output_str[index] = 0;
+    return output_str;
+}

@@ -18,3 +18,5 @@ int strlen(const char* str);
 int printf(const char* str, int line);
 
 char* itoa(int number, char* str, int base);
+
+char* merge(char* output_str, int number_of_elements, char* input_strings[]);
