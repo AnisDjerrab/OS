@@ -11,7 +11,8 @@ boot:
     cli             ; no interrupts
     cld             ; init the system
     ;; set the buffer index
-    mov ax, 0x50
+    mov ax, 0x50    ; start adress of the OS
+    ;; this is a standard start adress that does not corrupt BIOS memory and leaves space for the OS
     mov es, ax
     xor bx, bx
     mov al, 8       ; read Heigt sectors
