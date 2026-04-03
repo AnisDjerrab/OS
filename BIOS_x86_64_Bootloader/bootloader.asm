@@ -21,7 +21,7 @@ boot:
     mov dh, 0       ; head number
     mov dl, 0       ; drive number
     mov ah, 0x02    ; read sectors for disk
-    int 0x13        ; call the BIOS routine
+    int 0x13        ; call the BIOS routine.. 
     jc disk_error   ; catch the failed reads
     jmp 0x50:0x0    ; boot the operating system
 

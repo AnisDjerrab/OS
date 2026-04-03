@@ -4,6 +4,9 @@
 #include <stdint.h>
 #include <uchar.h>
 
+extern char* tmp_buffer;
+extern int64_t* line;
+
 // include the asm func to change the cursor position wherever we want
 extern "C" volatile void setCursorPos(uint32_t pos);
 
