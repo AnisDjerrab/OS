@@ -4,7 +4,8 @@ bootloader := BIOS_x86_64_Bootloader
 bootloader_flags := -ffreestanding -O2 -mno-red-zone -fno-exceptions -fno-rtti -fno-stack-protector -fno-pic -m64
 
 bootloader:
-	as -f bin "${bootloader}/bootloader.s" -o "${bootloader}/bootloader.bin"
+	as "${bootloader}/bootloader.s" -o "${bootloader}/bootloader.o"
+	ld -T "${bootloader}"/flatBinary.ld "${bootloader}/bootloader.o" -o "${bootloader}/bootloader.bin"
 	nasm -f elf64 "${bootloader}"/early_boot.asm -o "${bootloader}"/early_boot.o
 	g++ $(bootloader_flags) -c -o "${bootloader}"/internal_API/standard_functions.o "${bootloader}"/internal_API/standard_functions.cpp
 	g++ $(bootloader_flags) -c -o "${bootloader}"/main.o "${bootloader}"/main.cpp

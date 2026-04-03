@@ -81,8 +81,6 @@ void populate_pci_devices_metadata(uint32_t* device_IDs_array, int number_of_pci
             pci_devices_metadata[i].ABAR = pci_read32(bus, slot, func, 0x24);
             number_of_ahci_devices++;
         }
-        char converted_number[9];
-        *line = printf(itoa(pci_devices_metadata[i].classCode, converted_number, 16), *line);
     }
     char converted_number[9];
     char* table[] = {(char*)"found ", itoa(number_of_ahci_devices, converted_number, 10), (char*)" AHCI devices..."};

@@ -2,7 +2,7 @@
 /* AnisDjerrab, 2025, GPL v3.0 */
 
 .section .text
-.org 0x7C00         /* tells GAS that the code will start at that adress (convention) */
+.org 0x0            /* in order for GAS to put the code at the very beginning of the binary */
 .code16             /* set ro the real mode */
 _start: jmp boot    /* set the boot function */
 
@@ -16,12 +16,12 @@ boot:
     /* this is a standard start adress that does not corrupt BIOS memory and leaves space for the OS */
     movw %ax, %es
     xorw %bx, %bx
-    mov $8, %al     /* read Heigt sectors */
-    mov $0, %ch     /* track 0 */
-    mov $2, %cl     /* sectors to read (the second sector) */
-    mov $0, %dh     /* head number */
-    mov $0, %dl     /* drive number */
-    mov $0x02, %ah  /* read sectors for disk */
+    movb $8, %al    /* read Heigt sectors */
+    movb $0, %ch    /* track 0 */
+    movb $2, %cl    /* sectors to read (the second sector) */
+    movb $0, %dh    /* head number */
+    movb $0, %dl    /* drive number */
+    movb $0x02, %ah /* read sectors for disk */
     int $0x13       /* call the BIOS routine.. */
     jc disk_error   /* catch the failed reads */
     ljmp $0x50,$0x0 /* boot the operating system */
