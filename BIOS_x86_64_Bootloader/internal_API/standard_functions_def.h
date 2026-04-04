@@ -1,8 +1,7 @@
 // this file contains definitions of the standard functions provided to the bootloader
 
-#include <iterator>
 #include <stdint.h>
-#include <uchar.h>
+typedef uint8_t char8_t;
 
 extern char* tmp_buffer;
 extern int64_t* line;

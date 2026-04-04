@@ -1,7 +1,8 @@
 // this file contains the standard functions provided to the bootloader
+
 #include <stdint.h>
-#include <uchar.h>
 #include "standard_functions_def.h"
+typedef uint8_t char8_t;
 
 volatile char* VGA_MEMORY = (char*)0xB8000;
 volatile char* VGA_TMP_BUFFER = (char*)0x3000;

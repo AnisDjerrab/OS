@@ -3,7 +3,6 @@
 
 #include "Peripherals/PCI.h"
 #include "internal_API/standard_functions_def.h"
-#include <cstdio>
 #include <stdint.h>
 
 #define MAX_PCI_DEVICES 512                     // the max of PCI devices supported by this bootloader
