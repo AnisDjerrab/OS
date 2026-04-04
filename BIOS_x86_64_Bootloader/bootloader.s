@@ -1,5 +1,5 @@
-/* this is the stage 1 bootloader -- the first bit of code that is executed on the machine */
-/* AnisDjerrab, 2025, GPL v3.0 */
+// this is the stage 1 bootloader -- the first bit of code that is executed on the machine
+// AnisDjerrab, 2025, GPL v3.0
 
 .section .text
 .org 0x0            /* in order for GAS to put the code at the very beginning of the binary */
@@ -11,9 +11,9 @@ boot:
     /* basic init of the system */
     cli             /* no interrupts */
     cld             /* init the system */
-    /* set the buffer index */
+    // set the buffer index
     mov $0x50, %ax  /* start adress of the OS */
-    /* this is a standard start adress that does not corrupt BIOS memory and leaves space for the OS */
+    // this is a standard start adress that does not corrupt BIOS memory and leaves space for the OS
     movw %ax, %es
     xorw %bx, %bx
     movb $8, %al    /* read Heigt sectors */
@@ -32,7 +32,7 @@ disk_error:
     int $0x10       /* Call BIOS interrupt */
     hlt             /* halt the system in case something went wrong */
 
-/* we have to be 512 bytes long. erase the rest of the */
+// we have to be 512 bytes long. erase the rest of the
 .fill 510 -(.-_start), 1, 0
-/* boot signature */
+// boot signature
 .word 0xAA55

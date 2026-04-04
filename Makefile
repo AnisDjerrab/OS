@@ -5,13 +5,13 @@ bootloader_flags := -ffreestanding -O2 -mno-red-zone -fno-exceptions -fno-rtti -
 
 bootloader:
 	as "${bootloader}/bootloader.s" -o "${bootloader}/bootloader.o"
-	ld -T "${bootloader}"/flatBinary.ld "${bootloader}/bootloader.o" -o "${bootloader}/bootloader.bin"
-	nasm -f elf64 "${bootloader}"/early_boot.asm -o "${bootloader}"/early_boot.o
+	ld -T "${bootloader}"/bootloader_linker_script.ld "${bootloader}/bootloader.o" -o "${bootloader}/bootloader.bin"
+	as "${bootloader}/early_boot.s" -o "${bootloader}/early_boot.o"
 	g++ $(bootloader_flags) -c -o "${bootloader}"/internal_API/standard_functions.o "${bootloader}"/internal_API/standard_functions.cpp
 	g++ $(bootloader_flags) -c -o "${bootloader}"/main.o "${bootloader}"/main.cpp
 	g++ $(bootloader_flags) -c -o "${bootloader}"/Peripherals/PCI.o "${bootloader}"/Peripherals/PCI.c
 	ld -r "${bootloader}"/main.o "${bootloader}"/internal_API/standard_functions.o "${bootloader}"/Peripherals/PCI.o -o "${bootloader}"/c_combined.o
-	ld -T "${bootloader}"/linker.ld "${bootloader}"/early_boot.o "${bootloader}"/c_combined.o --oformat binary -o "${bootloader}"/early_boot.bin
+	ld -T "${bootloader}"/main_linker_script.ld "${bootloader}"/early_boot.o "${bootloader}"/c_combined.o --oformat binary -o "${bootloader}"/early_boot.bin
 
 bootdisk: bootloader
 	dd if=/dev/zero of=disk.img bs=512 count=2880
