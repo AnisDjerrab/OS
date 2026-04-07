@@ -6,6 +6,8 @@ typedef uint8_t char8_t;
 extern char* tmp_buffer;
 extern int64_t* line;
 
+extern "C" struct map_memory_space_flat ;
+
 // include the asm func to change the cursor position wherever we want
 extern "C" volatile void setCursorPos(uint32_t pos);
 
@@ -22,3 +24,5 @@ int printf(const char* str, int line);
 char* itoa(int number, char* str, int base);
 
 char* merge(char* output_str, int number_of_elements, char* input_strings[]);
+
+void map_memory_space_flat(map_memory_space_flat* map);

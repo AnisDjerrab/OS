@@ -41,10 +41,11 @@ bootloader: check_tools
 	$(AS) "${bootloader}/bootloader.s" -o "${bootloader}/bootloader.o"
 	$(LD) -T "${bootloader}"/bootloader_linker_script.ld "${bootloader}/bootloader.o" -o "${bootloader}/bootloader.bin"
 	$(AS) "${bootloader}/early_boot.s" -o "${bootloader}/early_boot.o"
+	$(AS) "${bootloader}"/internal_API/memory_mapping.s -o "${bootloader}"/internal_API/memory_mapping.o
 	$(CXX) $(bootloader_flags) -c -o "${bootloader}"/internal_API/standard_functions.o "${bootloader}"/internal_API/standard_functions.cpp
 	$(CXX) $(bootloader_flags) -c -o "${bootloader}"/main.o "${bootloader}"/main.cpp
 	$(CXX) $(bootloader_flags) -c -o "${bootloader}"/Peripherals/PCI.o "${bootloader}"/Peripherals/PCI.c
-	$(LD) -r "${bootloader}"/main.o "${bootloader}"/internal_API/standard_functions.o "${bootloader}"/Peripherals/PCI.o -o "${bootloader}"/c_combined.o
+	$(LD) -r "${bootloader}"/main.o "${bootloader}"/internal_API/standard_functions.o "${bootloader}"/Peripherals/PCI.o "${bootloader}"/internal_API/memory_mapping.o -o "${bootloader}"/c_combined.o
 	$(LD) -T "${bootloader}"/main_linker_script.ld "${bootloader}"/early_boot.o "${bootloader}"/c_combined.o --oformat binary -o "${bootloader}"/early_boot.bin
 
 bootdisk: bootloader
