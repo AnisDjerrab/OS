@@ -63,10 +63,10 @@ GtdDesc:                        /* GTD descriptor */
 .code32
 
 // reserve the minimal 4096 bytes of space for the PT, PDT and PDPT tables
+.equ PML4T_table, 0x13000       /* A page map level 4 table, which replaces the PDPT table as the root */
 .equ PDPT_table, 0x10000        /* hard coded adress for PDPT table ([beginning adress]*8) */
 .equ PDT_table, 0x11000         /* hard coded adress for PDT table ([beginning adress]*8 + 4096) */
 .equ PT_table, 0x12000          /* hard coded adress for PT table ([beginning adress]*8 + 4096*2) */
-.equ PML4T_table, 0x13000       /* A page map level 4 table, which replaces the PDPT table as the root */
 
 /* Access bits */
 .equ PRESENT       , 1 << 7
@@ -151,15 +151,15 @@ init32:
     mov $(4096*5), %ecx
     xor %eax, %eax
     rep stosb
-    // link the first PML4T table entry to the P4 table
+    // link the first PML4T table entry to the PDPT_table
     movl $PDPT_table, %eax
     orl $3, %eax                                    /* present | writable */
     movl %eax, (PML4T_table)
-    // link the first P4 entry to the P3 table
+    // link the first PDPT_table entry to the PDT_table
     movl $PDT_table, %eax
     orl $3, %eax                                    /* present | writable */
     movl %eax, (PDPT_table)
-    // link the first P3 entry to the P2 table
+    // link the first PDT_table entry to the PT_table
     movl $PT_table, %eax
     orl $3, %eax                                    /* present | writable */
     movl %eax, (PDT_table)
