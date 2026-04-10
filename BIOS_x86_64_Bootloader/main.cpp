@@ -12,6 +12,7 @@ uint32_t* PCI_FOUND_DEVICES = (uint32_t*)(0x104000 + sizeof(pci_device)* MAX_PCI
 char* tmp_buffer = (char*)0x3000;
 int64_t* line = (int64_t*)0x2992;
 
+
 extern "C" void C_main() {
     setCursorPos(0);
     char converted_number[9];
@@ -25,5 +26,19 @@ extern "C" void C_main() {
     *line = printf(merge(tmp_buffer, 3, table), *line);
     // now, we need to fill the PCI_DEVICES array with the device metadata
     populate_pci_devices_metadata(PCI_FOUND_DEVICES, number_of_found_pci_devices, PCI_DEVICES);
+    struct memory_space_map_virtual memory_struct;
+    memory_struct.flat_strct.real_addr = 0x200000;                // the used ram amount
+    memory_struct.flat_strct.number_of_pages = 3;
+    // these page addresses are defined in the Assembly early_boot.s file
+    memory_struct.flat_strct.PML4_table_index = 0x13000;
+    memory_struct.flat_strct.PDPT_table_index = 0x12000;
+    memory_struct.flat_strct.PDT_table_index = 0x11000;
+    memory_struct.flat_strct.PT_table_index = 0x10000;
+    memory_struct.flat_strct.used_space = 0;
+    memory_space_map_flat* ptr1 = &memory_struct.flat_strct;
+    asm("hlt");
+    map_memory_space_flat(ptr1);
+    volatile char* dangerous_ptr = (char*)0x200004;
+    dangerous_ptr[0] = '\0';
     asm("hlt");
 }

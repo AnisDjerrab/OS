@@ -10,7 +10,7 @@
 // it returns nothing but modified the struct in place with updated data.
 
 .global map_memory_space_flat
-map_memory_space:
+map_memory_space_flat:
     // create the stack frame
     push %rsp
     mov %rsp, %rbp

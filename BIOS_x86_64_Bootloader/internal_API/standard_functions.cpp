@@ -7,17 +7,6 @@ typedef uint8_t char8_t;
 volatile char* VGA_MEMORY = (char*)0xB8000;
 volatile char* VGA_TMP_BUFFER = (char*)0x3000;
 
-// declare the map_memory_space_flat struct
-struct map_memory_space_flat {
-    uint64_t real_addr;
-    uint64_t number_of_pages;
-    uint64_t PML4_table_index;
-    uint64_t PDPT_table_index;
-    uint64_t PDT_table_index;
-    uint64_t PT_table_index;
-    uint64_t used_space;
-};
-
 void memcpy(int* dest, int* src, uint64_t size) {
     // since the 1st arg, dest, is contained in %rdi, we do not need to move it
     // since the 2nd arg, src, is contained in %rsi, we do not need to move it
